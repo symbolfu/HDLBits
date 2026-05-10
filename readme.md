@@ -1,0 +1,2 @@
+HDLBits网页的练习记录：
+这个repo用于verilog练习 
