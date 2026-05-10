@@ -1,0 +1,49 @@
+wire：
+    directional：方向特性，这是物理上没有的
+        Unlike physical wires, wires (and other signals) in Verilog are directional；
+        only one direction, from (usually one) source to the sinks；
+
+    continuous assignment：连续赋值
+        verilog中的概念
+        In a Verilog "continuous assignment" (assign left_side = right_side;), 
+        the value of the signal on the right side is driven onto the wire on the left side;
+        continuous:
+            the assignment continues all the time even if the right side's value changes;
+            有改变立即传递特性；
+
+        the order in which they appear in the code does not matter:
+            Unlike a programming language, assign statements ("continuous assignments") describe connections between things, not the action of copying a value from one thing to another.
+
+常见运算符：
+NOT gate：
+    implement an inverter；
+
+AND gate:
+    implements an AND gate;
+    a wire that has no drivers will have an undefined value (often treated as 0 when synthesizing hardware). 没有驱动的input信号如何被处理；
+
+Nor Gate:或非
+    A NOR gate is an OR gate with its output inverted；not or;
+    A NOR function needs two operators when written in Verilog.
+    只能输入都为0时，才输出1；
+
+Xnor Gate：同或
+    输入相同时，输出1；
+
+
+
+声明wire信号：
+    在module中，声明wire类型的信号；
+    As circuits become more complex, you will need wires to connect internal components together；
+    When you need to use a wire, you should declare it in the body of the module, somewhere before it is first used,原则：使用前声明；
+
+
+
+7458: 小芯片
+    The 7458 is a chip with four AND gates and two OR gates；
+    提供了电路图结构，需要用verilog写出来；
+
+
+
+
+
