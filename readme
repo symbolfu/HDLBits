@@ -1,0 +1,20 @@
+HDLBits网页的练习记录：
+这个repo用于verilog练习 
+
+topics：
+    geting started              done
+    verilog language
+        basics
+        vectors
+        modules: hierachy
+        procedures
+        more verilog features
+    
+    Circuits:
+        combinational logic
+        sequential logic
+        building larger curcuits
+
+    verification:
+        reading simulation
+        writing testbenches
