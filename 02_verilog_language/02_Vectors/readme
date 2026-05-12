@@ -22,8 +22,9 @@ Unpacked vs. Packed Arrays：
         The unpacked dimensions are declared after the name；
         应用场景：
             They are generally used to declare memory arrays；
-        reg [7:0] mem [255:0]; 
+        reg [7:0] mem [255:0];   
         reg mem2 [28:0];
+            在行业中，对于变量名右侧的unpacked维度定义应该是[low:high]格式
 
     
 Accessing Vector Elements: Part-Select
@@ -68,6 +69,23 @@ concatenation operator:
                 // 循环体 - 每次迭代生成独立硬件
             end
         end
+
+    应用场景与限制：
+        前提是循环次数必须在综合时为常数，用 parameter 或 localparam 控制循环次数，生成不同规模的电路；
+        重复的同构逻辑生成：加法器、比较器、多路选择器。
+        优先编码器：
+            遍历信号位，找到第一个有效位（如仲裁逻辑）
+                for (i = 0; i < N; i = i + 1)
+                    if (request[i] && !grant_any)
+                        grant = i;
+                实际电路图可能是：req每个bit信号与grant_any取反后做逻辑与运算，然后再通过一个优先级编码器输出给grant信号；
+        循环变量（如 i）不能在循环体内被修改（综合工具要求静态展开）；
+        避免在 always @(posedge clk) 中使用 for 生成时序依赖复杂的状态机，否则可能综合出大量硬件；
+        
+    建议：
+        对大规模重复模块，优先使用 generate + for（Verilog-2001 支持）代替普通 always 块中的 for，以获得更清晰的层次结构；
+        
+
 
 
 

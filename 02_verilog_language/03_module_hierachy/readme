@@ -1,0 +1,138 @@
+module：
+    a module, which is a circuit that interacts with its outside through input and output ports；
+    a hierarchy, as modules can contain instances of other modules.
+    module和hierarchy的由来和原由；
+        一个module就是一个一定功能的电路图，包括输入/输出信号；
+        hierarchy只是为了方便不同module见信号的连接或者引用，因为在实际芯片中并没有hierarchy的物理概念；
+
+    Connecting Signals to Module Ports：
+        两种方式：instantiations 
+            By position：按位置进行连接，有点隐式规则；
+                mod_a instance1 ( wa, wb, wc );
+            by name：通过module内部的port name在例化是显示进行连接；
+                mod_a instance2 ( .out(wc), .in1(wa), .in2(wb) );
+            实际项目中都会采用by name的方式进行例化module；
+
+
+为什么verilog语法中会定义pack和unpack的概念呢？
+    编程建模的需要，但背后深刻反映了物理电路（内存硬件）的真实特性。
+    核心目的是让硬件描述语言能够精确地建模硬件中两种截然不同的物理存储结构：
+        寄存器（Register File / Flip-Flop）和 内存阵列（RAM）。
+
+    打包 (Packed) 模式： 
+        多个位元被物理地组合成一个宽字。例如，一个 32-bit 的寄存器。
+        当你向它写入时，32 个触发器（Flip-Flop）同时更新。它的物理行为就像一个不可分割的整体。
+        物理特性： 并行、同时更新、无地址解码开销。
+    解包 (Unpacked) 模式：
+        一组相同宽度的字物理地排列成一个深阵列；
+        例如，一个 1024x8 的 RAM；
+            物理上有一个地址解码器，你通过选择地址来访问特定的 8-bit 字。
+        物理特性： 串行选择、有访问延迟、面积效率高；
+
+    编程建模需求：
+        精确的位操作 (Bit Select)：
+            Packed数组可以；
+            Unpacked数组不行；
+        向量与标量的连续性 (Contiguity)：
+            对 packed 数组可以进行整体赋值、算术运算；
+            但对 unpacked 数组则不能。
+            packed 代表的是一个有宽度的单一实体，unpacked 代表的是一组独立的实体。
+        高效的仿真内存模型：
+            reg [7:0] mem [0:1023] 这样的模型，仿真器在内存中会如何存储它？
+                方案A (Packed模型)： 申请一个 8192 位的连续大位向量。
+                    访问 mem[addr] 时需要做大量的位提取和位拼接操作。这会极慢。
+                方案B (Unpacked模型)： 申请一个包含 1024 个元素的数组，每个元素是一个 8 位的独立变量。
+                    访问 mem[addr] 仅需一次数组索引，然后直接取出那 8 位。这极快。
+
+
+generate的语法规则：
+    声明gnerate块：
+        generate
+            // 生成项（module实例、assign、always等）
+        endgenerate
+
+    循环生成：
+        genvar i;
+        generate
+            for (i = 0; i < N; i = i + 1) begin : 块名
+                // 实例化或赋值
+            end
+        endgenerate
+
+    条件生成：
+        generate
+            if (条件) begin : 块名1
+                // 生成逻辑A
+            end else begin : 块名2
+                // 生成逻辑B
+            end
+        endgenerate
+
+    case生成：
+        generate
+            case (参数值)
+                0: begin : case0 // 块名可选
+                    // 生成逻辑
+                end
+                1: begin : case1
+                    // 生成逻辑
+                end
+            endcase
+        endgenerate
+
+    可以放到 generate 区域内的:
+        模块实例化 (module instance)
+        连续赋值 (assign)
+        always 过程块
+        initial 过程块（仅仿真）
+        function/task 定义
+        其他 generate 块（支持嵌套）
+
+    不可以放的：
+        wire/reg 声明（必须放在 generate 块外或块内部的局部声明区）；
+        parameter/localparam 声明（应在 generate 外定义）
+
+
+从generate区域内可放内容，引入for loop可以放什么呢？
+    for loop分为两类：
+        普通for loop：即在always块和initial块中；
+        for-generate；
+
+    普通for loop：
+        使用位置：always @(*), always @(posedge clk), initial, function, task；
+        一般不建议放在always @(posedge clk)中；
+        可放：
+            =
+            <=
+            if-else
+            case
+            call function
+            sub-for
+            wait（仿真）
+            repeat
+            while
+            forever
+        不可以放的：
+            模块实例化；模块实例化是结构级，不能出现在过程块内；
+            连续赋值assign；连续赋值是独立结构，不在过程块内；
+            always/initial块：过程块不能嵌套定义其他过程块；
+            wire声明；
+            参数声明；
+
+    for-generate：
+        可放：
+            模块实例化；
+            连续赋值assign；
+            always块
+            initial块
+            函数、任务定义：function automatic，有点像高级语言的lamba表达式，用完即丢；
+            sub-generate
+            门级源语；
+        不可以放的：
+            具体赋值语句（在 always 外）
+            if-else/case（在 always 外）
+            普通的 reg/wire 声明；
+
+
+
+
