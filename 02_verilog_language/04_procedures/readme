@@ -1,0 +1,139 @@
+procedures:
+    Procedures include:
+        always, 
+        initial, 
+        task, 
+        function blocks.
+
+    any circuit can be expressed as some combination of modules and assign statements.
+    However, sometimes this is not the most convenient way to describe the circuit.
+    Procedures provide an alternative syntax for describing circuits.
+        我是这样理解的：procedures的功能完成可以源语表达，但是为了使verilog建模语言建模高效，所以提供了这种语法；
+    
+
+    对于可综合的硬件，提供两种类型的always blocks：
+        组合逻辑：Combinational, 
+            always @(*)
+            Combinational always blocks are equivalent to assign statements;
+        时序逻辑：Clocked
+            always @(posedge clk)
+            Clocked always blocks create a blob of combinational logic just like combinational always blocks, 
+            but also creates a set of flip-flops (or "registers") at the output of the blob of combinational logic.
+            效果：计算结果不是立即可见；
+                 Instead of the outputs of the blob of logic being visible immediately, 
+                 the outputs are visible only immediately after the next (posedge clk).
+
+        
+    wire vs reg: 使用场景
+        The left-hand-side of an assign statement must be a net type;(wire)
+        the left-hand-side of a procedural assignment (in an always block) must be a variable type (e.g., reg).
+        note:
+            These types (wire vs. reg) have nothing to do with what hardware is synthesized, 
+            and is just syntax left over from Verilog's use as a hardware simulation language.
+            典型场景：always @(*)中，过程赋值左侧变量必须为reg，但是在综合时并不会产生寄存器，而是纯组合逻辑；
+
+    Blocking vs. Non-Blocking Assignment：
+        时序逻辑块中的赋值形式；
+        blocking assignment
+            a = b;
+            使用场景：
+                In a combinational always block, use blocking assignments；
+            物理效果：
+        non-blocking assignment
+            a <= b;
+            使用场景：
+                In a clocked always block, use non-blocking assignments. 
+
+        如果从纯硬件（电路图）角度看，无论什么类型的赋值其实都没有物理含义，这里可能需要从仿真器角度理解value的更新时刻；
+        这个两种赋值的区别只是从simulation角度进行语言设计的；对于综合工具而言，这两种赋值是等价的；
+
+
+    到目前为止已经学习了三种赋值方式：
+        过程赋值：assign
+        always块中的blocking赋值和non-blocking赋值；
+
+
+    always在编程过程中极易出现的问题：
+        A common source of errors: How to avoid making latches？
+            latch的危害：
+                特点：
+                    电平敏感
+                    它让硬件行为变得不可预测（电平敏感而非边沿敏感），且通常会导致时序分析困难、功耗增加；
+            产生场景：
+                锁存器是由组合逻辑（always @(*) 或 assign）中的不完整赋值产生的；
+                如果某个分支下没有赋值，综合工具会认为该变量需要"保持原值"——这在组合逻辑中只能通过锁存器实现。
+            典型代码：
+                always @(*) begin
+                    if (sel)
+                        out = a;
+                end
+                    电路图结构：
+                            +-----------+
+                            |           |
+                      a ----| D    Q    |---- out
+                            |           |
+                      sel --| EN        |
+                            |           |
+                            +-----------+
+                进一步扩展：
+                    结论：就算这样补全条件，综合工具也会参数latch；
+                    always @(*) begin
+                        if (sel)
+                            out = a;
+                        else
+                            out = out;
+                    end               
+                    上述代码解决了条件缺少的问题，但是是否会引入combinational loop呢？
+                        综合工具可能会推出两种结果（可能）：
+                            latch和纯导线（最终因为无源驱动，就不会采用纯导线，而是latch）；
+                            当推出纯导线时，这个环路是无驱动的。
+                            但由于 q 没有被任何时钟或外部信号驱动，综合工具会检测到这个环路是纯组合的、无源的，
+                            因此会在逻辑优化阶段直接将其优化掉，并发出警告（Combinational loop detected and resolved/optimized）。
+                        这里如何理解无驱动？
+                            有驱动：节点连接到一个输出端
+                                    基本输入端口
+                                    逻辑门的输出
+                                    三态缓冲器的输出
+                                    锁存器/触发器的Q端
+                            
+                            无源/浮空：节点没有连接到任何逻辑门的输出或输入端口。它只是一个孤立的导线，或者仅仅连接到自己。
+                                对于无源，工具可能会优化为latch；
+
+                    综合工具处理：可能原则
+                        纯导线方案是在有源驱动采用，而latch是在无源驱动时采用；
+
+                code风格的扩展：
+                    方式1：
+                        补全所有的可能性；
+                    方式2：现在应用较多的方式
+                        always @(*) begin
+                            q = 0;        // ← 外部常量驱动
+                            if (en)
+                                q = d;    // ← 外部输入驱动
+                        end
+
+
+
+
+        什么时候会使用latch呢？
+            极少数情况（如低功耗设计、异步 FIFO 指针同步等）会故意使用锁存器；
+            初学者一般可以认为代码综合后不能有latch存在；
+
+
+    电路设计时：
+        When designing circuits, you must think first in terms of circuits:预期产生什么电路
+            I want this logic gate
+            I want a combinational blob of logic that has these inputs and produces these outputs；
+            I want a combinational blob of logic followed by a set of flip-flops
+        
+        语义不代表结果：
+            Syntactically-correct code does not necessarily result in a reasonable circuit (combinational logic + flip-flops).
+            The usual reason is: "What happens in the cases other than those you specified?". Verilog's answer is: Keep the outputs unchanged；
+
+
+
+
+
+
+
+

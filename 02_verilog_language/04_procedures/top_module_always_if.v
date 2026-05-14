@@ -1,0 +1,26 @@
+`default_nettype none
+
+module top_module(
+    input a,
+    input b,
+    input sel_b1,
+    input sel_b2,
+    output wire out_assign,
+    output reg out_always
+);
+
+    assign out_assign = sel_b1 == 1'b1 ? a : b;
+
+
+    always @(*) begin
+        if(sel_b2) begin
+           out_always = a; 
+        end
+        else begin
+            out_always = b;
+        end
+    end 
+
+
+
+endmodule
