@@ -9,15 +9,15 @@ module top_module(
     output reg out_always
 );
 
-    assign out_assign = sel_b1 == 1'b1 ? a : b;
+    assign out_assign = {sel_b2, sel_b1} == 2'b11 ? b : a;
 
 
     always @(*) begin
-        if(sel_b2) begin
-           out_always = a; 
+        if({sel_b2, sel_b1} == 2'b11) begin
+           out_always = b; 
         end
         else begin
-            out_always = b;
+            out_always = a;
         end
     end 
 

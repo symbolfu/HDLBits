@@ -131,6 +131,32 @@ procedures:
             The usual reason is: "What happens in the cases other than those you specified?". Verilog's answer is: Keep the outputs unchanged；
 
 
+    case statements vs if-else:
+        Case statements in Verilog are nearly equivalent to a sequence of if-elseif-else that compares one expression to a list of others;
+        Duplicate (and partially overlapping) case items are permitted. The first one that matches is used. C does not allow duplicate case items.
+        Each case item can execute exactly one statement. This makes the "break" used in C unnecessary. 
+        综合后电路的差异：
+            if-else:
+                具有优先级；
+                实际电路：优先编码器，多级mux；
+                如果条件互斥，综合工具可能优化为case类似的电路；
+                较慢，路径长，面积可能略小；
+                必须使用else避免latch；
+            case：
+                无优先级；
+                实际电路：并行比较器、平坦mux或rom；
+                较快，路径短，面积略大；
+                建议使用default避免latch；
+
+        选择依据：
+            如果需要优先级：
+                if-elseif
+            不需要优先级：
+                case
+
+A priority encoder：
+    A priority encoder is a combinational circuit that, when given an input bit vector, outputs the position of the first 1 bit in the vector；
+    
 
 
 

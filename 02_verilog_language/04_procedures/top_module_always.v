@@ -6,7 +6,7 @@ module top_module(
     input wire a,
     input wire b,
     output wire out_assign,
-    output reg out_alwaysbloc
+    output reg out_alwaysblock
 );
 
     assign out_assign = a & b;
@@ -16,7 +16,7 @@ module top_module(
     // 但是这里的变量out_alwaysbloc必须定义为reg类型，
     // 所以并不会reg类型变量就表示寄存器，这只是verilog语法的规定；
     always @(*) begin
-        out_alwaysbloc = a & b;
+        out_alwaysblock = a & b;
     end
 
 endmodule
