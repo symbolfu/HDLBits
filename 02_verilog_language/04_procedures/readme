@@ -156,10 +156,25 @@ procedures:
 
 A priority encoder：
     A priority encoder is a combinational circuit that, when given an input bit vector, outputs the position of the first 1 bit in the vector；
-    
 
 
+casez语法：
+    This is what casez is for: 
+        It treats bits that have the value z as don't-care in the comparison.
+    The digit ? is a synonym for z. so 2'bz0 is the same as 2'b?0；
+    pattern的意味；
 
+casex：
+    There is also a similar casex that treats both x and z as don't-care. 
+    I don't see much purpose to using it over casez.
 
-
+避免latch的写法：
+    always一上来，就对各种变量赋值；
+    这种形式的情况下，default都不需要了；
+    always @(*) begin
+        up = 1'b0; down = 1'b0; left = 1'b0; right = 1'b0;
+        case (scancode)
+            ... // Set to 1 as necessary.
+        endcase
+    end    
 

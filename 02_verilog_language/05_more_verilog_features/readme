@@ -1,0 +1,24 @@
+介绍更多verilog语法：
+    三目条件运算符：
+     condition ？ ture_epxression : false_expression;
+
+    Reduction:
+        ou want to create a wide gate that operates on all of the bits of one vector, like (a[0] & a[1] & a[2] & a[3] ... ), which gets tedious if the vector is long.
+        &， | ， ^作为单目操作符；
+
+
+    Parity checking：
+        简单的数据奇偶校验；
+        计算规则：
+            偶校（even）验位：^data (如果 data 中有奇数个 1，结果为 1；偶数个 1，结果为 0
+            奇校（odd）验位：~^data (对偶校验结果取反)
+
+
+    计算输入vector中1的个数；
+
+    BCD:
+        Binary-Coded Decimal（二进制编码的十进制数）的缩写l
+        4 位二进制数 来表示 1 位十进制数（0-9）;
+        一种编码方法，十进制数中的每个位上数值用4bit表示，最终将多个4bit串起来就用于表达对应的十进制数；
+        
+
