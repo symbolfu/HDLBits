@@ -1,0 +1,27 @@
+multiplexer：
+    选择器：mux
+
+    在多sel的情况下，可以采用vector[sel],完成单bit的选择；这种写法可综合；
+    Vector indices can be variable, as long as the synthesizer can figure out that the width of the bits being selected is constant.
+    In particular, selecting one bit out of a vector using a variable index will work
+    Constant 在这里不是指 S 的值不变，而是指从向量中切出来的那段数据的长度（位宽）在编译时是确定的、固定的数字。
+
+    错误使用：
+            // error
+            // assign out = in[sel*4+3:sel*4];  
+            verilog-1995规定：
+                in[sel*4+3:sel*4]中的上下限必须同时为constant呢；显然这种表达是变化的；
+
+
+索引向量部分选择（Indexed Vector Part-Select）语法：
+    verilog-2001标准提供；
+    语法规则：
+        [base_expr +: width_expr]   // 升序选择（从 base 向上）
+        [base_expr -: width_expr]   // 降序选择（从 base 向下）
+        
+        base_expr	可以是变量或常量（reg, wire, integer, 常量）,即起点；
+        width_expr	必须是常量（或常量表达式如 4, WIDTH），数据宽度；
+        方向	+: 表示升序（低位地址增长），-: 表示降序（高位地址增长）
+        位宽	由 width_expr 决定，固定不变
+
+    
