@@ -1,0 +1,7 @@
+basic gates;
+    这部分应该是对language部分学习的练习；
+    如果有新的知识点也会在readme中记录；
+
+    note:
+        unpack data需要使用单目运算的& | ^运算符;
+        
