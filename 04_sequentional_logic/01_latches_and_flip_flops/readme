@@ -1,0 +1,40 @@
+latches and flip-flops:
+    Dff的特色：
+        A D flip-flop is a circuit that stores a bit and is updated periodically, 
+        at the (usually) positive edge of a clock signal.
+    出现形式：
+        D flip-flops are created by the logic synthesizer when a clocked always block is used；
+        A D flip-flop is the simplest form of "blob of combinational logic followed by a flip-flop" where the combinational logic portion is just a wire；
+        Clocked always blocks should use non-blocking assignments;
+
+
+    D触发器类型：
+        电平触发 D 触发器（Latch，锁存器）
+        边沿触发 D 触发器（Edge-Triggered D Flip-Flop）
+        带异步复位/置位的 D 触发器
+        带同步复位/置位的 D 触发器
+        带使能端（Enable）的 D 触发器
+            EN = 0（无效）：时钟上升沿到来时，Q保持原值（忽略输入）
+        双沿触发 D 触发器（Dual-Edge, 较少见）
+
+
+    同步复位 vs 异步复位：
+        区别特征：
+            复位信号是否受时钟控制；
+        异步复位：  
+            优点：
+                响应极快：复位信号几乎可以立刻让电路复位，无需等时钟
+            缺点：
+                易受噪声干扰：复位信号上的毛刺（短暂脉冲）可能导致意外复位。
+                时序分析复杂：复位信号的撤销（释放）时刻与时钟沿的恢复时间和移除时间必须满足要求，否则可能导致亚稳态（输出不确定状态）。
+        同步复位：
+            优点：  
+                抗噪性强：复位信号上的毛刺，只要不发生在时钟沿附近，就不会影响电路。
+                时序分析简单：复位行为与数据信号类似，更容易满足建立/保持时间，不易产生亚稳态。
+            缺点：  
+                需要有效时钟：如果时钟停止，复位就无法进行。
+                组合逻辑延时：复位逻辑（判断 if(rst) 并选择清零或采样）会额外增加组合电路延时，可能限制最高工作频率。
+
+        对于异步复位（撤销时）可能产生亚稳态怎么解决？
+            异步复位，同步释放
+        
