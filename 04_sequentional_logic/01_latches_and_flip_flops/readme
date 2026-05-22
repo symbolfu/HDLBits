@@ -38,3 +38,20 @@ latches and flip-flops:
         对于异步复位（撤销时）可能产生亚稳态怎么解决？
             异步复位，同步释放
         
+
+
+    双沿采样：
+        利用异或运算性质：
+            a ^ a = 0
+            a ^ 0 = a 
+            a ^ (b ^ c) = (a ^ b) ^ c;
+
+        always @(posedge clk)
+            p <= d ^ n;   // 在上升沿，p 存储 d 与当前 n 的异或值
+        always @(negedge clk)
+            n <= d ^ p;   // 在下降沿，n 存储 d 与当前 p 的异或值
+
+        assign q = p ^ n; // 输出为 p 与 n 的异或，结果恒等于上一拍的 d
+        原理：
+            在时钟上升沿后，q = p_new ^ n_old = (d ^ n_old) ^ n_old = d；
+            在下降沿后，q = p_current ^ n_new = p_current ^ (d ^ p_current) = d。

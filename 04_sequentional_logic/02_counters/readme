@@ -1,0 +1,3 @@
+counters：
+     a 4-bit binary counter that counts from 0 through 15；
+     a decade counter that counts from 0 through 9;
