@@ -50,3 +50,10 @@ shift registers：
                     其他item项：如果存在则表示参与抽头；
                     1： x⁰ (=1) 对应抽头 b0 的参与；
                     缺失项表示，不参与抽头；
+
+    这个章节练习了很多lsfr电路图，但是具体应用场景还未了解；
+
+    a 3-input look-up-table (LUT):
+        an 8x1 memory
+         extend the circuit to have 3 additional inputs A,B,C and an output Z. 
+         The circuit's behaviour should be as follows: when ABC is 000, Z=Q[0], when ABC is 001, Z=Q[1], and so on.
