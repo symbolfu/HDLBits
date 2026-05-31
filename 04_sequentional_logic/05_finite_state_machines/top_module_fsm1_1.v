@@ -23,6 +23,8 @@ module top_module(
     parameter A = 0, B = 1;
     reg state, next_state;
 
+    // 两段式状态机
+    
     // state tansfer and register
     always @(posedge clk or posedge areset) begin
         if(areset) begin
