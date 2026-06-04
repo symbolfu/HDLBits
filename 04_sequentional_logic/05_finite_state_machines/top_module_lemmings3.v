@@ -1,19 +1,21 @@
 `default_nettype none
 module top_module(
     input clk,
-    input areset,     // // Freshly brainwashed Lemmings walk left
+    input areset,    // Freshly brainwashed Lemmings walk left.
     input bump_left,
     input bump_right,
     input ground,
+    input dig,
+
     output walk_left,
     output walk_right,
-    output aaah
+    output aaah,
+    output digging
 );
 
-    parameter LEFT = 0,  RIGHT = 1, FALL = 2;
+    parameter LEFT = 0, RIGHT = 1, FALL = 2, DIG = 3;
     reg [1:0] state, next_state;
     reg [1:0] save_state, next_save_state;
-    
 
     always @(posedge clk or posedge areset) begin
         if(areset) begin
@@ -26,6 +28,7 @@ module top_module(
         end
     end
 
+
     always @(*) begin
         next_state = state;
         next_save_state = save_state;
@@ -34,6 +37,10 @@ module top_module(
             LEFT: begin
                 if( ground == 1'b0) begin
                     next_state = FALL;
+                    next_save_state = state;
+                end
+                else if (dig == 1'b1) begin
+                    next_state = DIG;
                     next_save_state = state;
                 end
                 else if(bump_left == 1'b1 && bump_right == 1'b1) begin
@@ -49,6 +56,10 @@ module top_module(
             RIGHT: begin
                 if( ground == 1'b0) begin
                     next_state = FALL;
+                    next_save_state = state;
+                end
+                else if (dig == 1'b1) begin
+                    next_state = DIG;
                     next_save_state = state;
                 end
                 else if(bump_left == 1'b1 && bump_right == 1'b1) begin
@@ -66,8 +77,13 @@ module top_module(
                     next_state = save_state;
                 end
             end
+            DIG: begin
+                if(ground == 1'b0) begin
+                    next_state = FALL;
+                end
+            end
         endcase
-    end
+    end        
 
 
     // output 
@@ -75,26 +91,34 @@ module top_module(
         walk_left = 1'b0;
         walk_right = 1'b0;
         aaah = 1'b0;
+        digging = 1'b0;
 
         case (state)
             LEFT: begin
                 walk_left = 1'b1;
                 walk_right = 1'b0;
                 aaah = 1'b0;
+                digging = 1'b0;
             end 
             RIGHT: begin
                 walk_left = 1'b0;
                 walk_right = 1'b1;
-                aaah = 1'b0;                
+                aaah = 1'b0;  
+                digging = 1'b0;              
             end
             FALL: begin
                 walk_left = 1'b0;
                 walk_right = 1'b0;
-                aaah = 1'b1;                
+                aaah = 1'b1;  
+                digging = 1'b0;              
+            end
+            DIG: begin
+                walk_left = 1'b0;
+                walk_right = 1'b0;
+                aaah = 1'b0;  
+                digging = 1'b1;                   
             end
         endcase
     end
-
-
 
 endmodule
