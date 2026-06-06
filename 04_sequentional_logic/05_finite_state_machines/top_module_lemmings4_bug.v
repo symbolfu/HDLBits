@@ -31,6 +31,9 @@ module top_module(
         if(areset) begin
             count <= 5'b0;
         end
+        else if (count >= 5'd21) begin   // fix bug: overflow
+            count <= count;
+        end
         else if(~ground) begin
             count <= count + 5'b1;
         end 
